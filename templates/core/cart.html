@@ -1,0 +1,79 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'includes/navbar.html'%}
+<section>
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="text-center my-5">
+                <h5 class="display-5">Cart</h5>
+            </div>
+
+            <div class="col-12 col-lg-8">
+
+                <div class="card mb-4">
+                    <div class="card-body bg-light">
+                        <a class="btn btn-outline-dark mb-3" href="/">&#x2190; Continue Shopping</a>
+
+                        <table class="table bg-light">
+                            <tr>
+                                <th>
+                                    <h5>Items: <strong>{{ items|length }}</strong></h5>
+                                </th>
+                                <th>
+                                    <h5>Total: <strong>K{{ total_price }}</strong></h5>
+                                </th>
+                                <th class="text-end">
+                                    <a href="{% url 'checkout' %}" class="btn btn-outline-dark">Checkout</a>
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                {% for item in items %}
+                <div class="card my-3">
+                    <div class="card-body bg-light">
+                        <div class="d-flex fw-bold mb-3">
+                            <div class="flex-fill">Img</div>
+                            <div class="flex-fill">Name</div>
+                            <div class="flex-fill">Price</div>
+                            <div class="flex-fill">Quantity</div>
+                            <div class="flex-fill">Total</div>
+                        </div>
+
+                        <div class="d-flex align-items-center mb-3 py-2">
+                            <div class="flex-fill">
+                                <img class="img-fluid" src="{{ item.image }}" alt="Product Image" style="max-width: 50px;">
+                            </div>
+                            <div class="flex-fill">
+                                <p class="mb-0">{{ item.title }}</p>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="mb-0">${{ item.price }}</p>
+                            </div>
+                            <div class="flex-fill">
+                                <div class="d-flex align-items-center">
+                                    <p class="mb-0 me-2">{{ item.quantity }}</p>
+                                    <div class="d-flex flex-column">
+                                        <button class="btn btn-sm btn-outline-secondary mb-1 btn-increment" type="button" data-product-id="{{ item.id }}">+</button>
+                                        <button class="btn btn-sm btn-outline-secondary btn-decrement" type="button" data-product-id="{{ item.id }}">-</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="mb-0">K{{ item.final_price_product }}.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

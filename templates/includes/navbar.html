@@ -1,0 +1,49 @@
+{% load static %}
+<nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+    <div class="container-xl">
+        <a href="/" class="navbar-brand">
+            <span class="fw-bold text-secondary">Buy Me</span>
+        </a>
+        <!-- Toggle button for mobile nav -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse justify-content-end g-3" id="main-nav">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item me-auto">
+                    <form action="{% url 'search_products' %}" method="POST">
+                        {% csrf_token %}
+                        <input class="form-control me-2" name="search_query" type="search" placeholder="Search" aria-label="Search">
+                        
+                    </form>
+                    
+                </li>
+
+                <a href="{% url 'cart' %}" style=" text-decoration: none;">
+                   
+                    <li class="nav-item ms-3">
+                        <img class="img-fluid" src="{%  static '/images/shopping-cart.png' %}" width="25" height="25">
+                        <span class="cart-value">0</span>
+                    </li>
+                </a>
+                {% if request.user.is_authenticated %}
+                <li class="nav-item dropdown ms-3">
+                    <a class="btn btn-secondary dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ request.user.username }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="">Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout_user' %}">Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item ms-3">
+                    <a  href="{% url 'login' %}"  class="btn btn-secondary" href="#topics">Login</a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</nav>
