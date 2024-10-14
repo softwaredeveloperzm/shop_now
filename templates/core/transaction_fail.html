@@ -1,0 +1,24 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content  %}
+
+{% include 'includes/navbar.html'%}
+
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card text-center shadow-lg">
+                    <div class="card-body py-5">
+                        <h1 class="display-4 text-danger mb-4">Transaction Failed</h1>
+                        <p class="lead">Unfortunately, there was an issue with your transaction. Please try again or contact support if the issue persists.</p>
+                        <a href="{% url 'home' %}" class="btn btn-primary mt-4">Return to Home</a>
+                        <a href="{% url 'checkout' %}" class="btn btn-warning mt-4">Try Again</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content  %} 
+
+{% include 'includes/navbar.html'%}
+
+<section class="container" style="margin-top: 100px;">
+    <div class="row">
+        <div class="text-center">
+            <h5 class="display-5">Your checkout</h5>
+        </div>
+        
+        <div id="ship_form" class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form name="delAddr" onsubmit="return handleFormSubmit()" id="form">
+                        {% if not request.user.is_authenticated %}
+                        <div id="user-info">
+                            <div class="form-group mb-4">
+                                <label for="name">Name</label>
+                                <input required class="form-control" type="text" id="name" name="name" placeholder="Name">
+                                <small id="name-error" class="form-text text-danger"></small>
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label for="email">Email</label>
+                                <input required class="form-control" type="email" id="email" name="email" placeholder="Email">
+                                <small id="email-error" class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <button type="submit" class="btn btn-success w-100">Continue</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="main" class="card my-5" style="display:none">
+                <div class="card-body">
+                    <small>Paypal Options</small>
+
+                    <!-- Set up a container element for the button -->
+                    <div id="paypal-button-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <a class="btn btn-outline-dark mb-3" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+                    <hr>
+                    <h3>Order Summary</h3>
+                    <hr>
+                    {% for item in items %}
+                    <div class="cart-row mb-3 d-flex justify-content-between align-items-center">
+                        <div class="flex-fill">
+                            <img class="row-image" src="{{ item.image }}" alt="Product Image" width="50" height="50">
+                            {{ item.title }} x{{ item.quantity }}
+                        </div>
+                        <div class="flex-fill text-end">
+                            <p>K{{ item.final_price_product }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <h5>Total Items: {{ items|length }}</h5>
+                    <h5>Total: K{{ total_price }}.00</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const parentCookieName = "delAddr";
+
+    function validateForm() {
+        let valid = true;
+    
+        document.getElementById('name-error').textContent = '';
+        document.getElementById('email-error').textContent = '';
+    
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+    
+        if (name === "") {
+            document.getElementById('name-error').textContent = 'Name must be filled out';
+            valid = false;
+        }
+    
+        if (email === "") {
+            document.getElementById('email-error').textContent = 'Email must be filled out';
+            valid = false;
+        } else {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                document.getElementById('email-error').textContent = 'Invalid email format';
+                valid = false;
+            }
+        }
+    
+        return valid;
+    }
+    
+    function handleFormSubmit() {
+        if (validateForm()) {
+            storeFormDataAsCookies();
+            logStoredData();
+            showPaypalButton();
+            hideForm();
+            return false;
+        }
+        return false;
+    }
+    
+    function storeFormDataAsCookies() {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+    
+        const data = {
+            name: name,
+            email: email
+        };
+    
+        document.cookie = `${parentCookieName}=${encodeURIComponent(JSON.stringify(data))}; path=/`;
+    }
+    
+    function getStoredData() {
+        const cookieArr = document.cookie.split("; ");
+        for (let i = 0; i < cookieArr.length; i++) {
+            const cookiePair = cookieArr[i].split("=");
+            if (cookiePair[0] === parentCookieName) {
+                return JSON.parse(decodeURIComponent(cookiePair[1]));
+            }
+        }
+        return null;
+    }
+    
+    function logStoredData() {
+        const storedData = getStoredData();
+        console.log("Stored Data: ", storedData);
+    }
+    
+    function showPaypalButton() {
+        document.getElementById('main').style.display = 'block';
+    }
+    
+    function hideForm() {
+        document.getElementById('form').style.display = 'none';
+    }
+    
+    function prefillForm() {
+        const storedData = getStoredData();
+        if (storedData) {
+            document.getElementById('name').value = storedData.name;
+            document.getElementById('email').value = storedData.email;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', prefillForm);
+    
+</script>
+
+
+
+<script src="https://www.paypal.com/sdk/js?client-id=AbnftPSMgcNYlAYPLC2gJxR4KWxcvucfBMy2q8oWt_dNxUkaXCWJKCzgTYU_gjEVrSaxMSRlqlODV_Gi&currency=USD"></script>
+<script>
+    var total = '{{ total_price }}';
+
+    var items = [
+        {% for item in items %}
+        {
+            title: "{{ item.title }}",
+            quantity: {{ item.quantity }},
+            price: "{{ item.final_price_product }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: parseFloat(total).toFixed(2)
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                details.items = items;
+                details.total_price = total;
+
+                fetch('{% url "process_transaction" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        id: details.id,
+                        items: details.items,
+                        total_price: details.total_price
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    if (data.status === 'success') {
+                        document.cookie = "cart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        window.location.href = '{% url "transaction_complete" %}';
+                    } else {
+                        window.location.href = '{% url "transaction_fail" %}';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Fetch error:', error);
+                    window.location.href = '{% url "transaction_fail" %}';
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+
+
+
+
+
+
+
+
+{% endblock  %}

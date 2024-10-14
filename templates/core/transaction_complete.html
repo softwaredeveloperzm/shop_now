@@ -1,0 +1,23 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content  %}
+
+{% include 'includes/navbar.html'%}
+
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card text-center shadow-lg">
+                    <div class="card-body py-5">
+                        <h1 class="display-4 text-success mb-4">Thank You!</h1>
+                        <p class="lead">Your order has been successfully placed. We appreciate your business!</p>
+                        <a href="{% url 'home' %}" class="btn btn-primary mt-4">Return to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

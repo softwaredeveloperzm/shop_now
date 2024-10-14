@@ -1,0 +1,207 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'includes/navbar.html' %}
+
+<section id="product_details">
+    <div class="container my-5 py-5">
+        <div class="row justify-content-center">
+            <!-- Section Title -->
+            <div class="col-12 text-center mb-5">
+                <h5 class="display-5 text-secondary">Product Details</h5>
+            </div>
+
+            <!-- Product Image -->
+            <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center mb-4 mb-lg-0">
+                <div class="card shadow" style="width: 100%; max-width: 350px;"> <!-- Added shadow and max-width -->
+                    <img src="{{ product_details.image.url }}" alt="Product Image" class="card-img-top">
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <!-- Product Title and Price -->
+                       <!--<h5 class="card-title">{{ product_details.title }}</h5>--> 
+                       <!--<h5 class="card-title text-muted">K{{ product_details.price }}</h5>--> 
+                        
+                        <!-- Rating Stars -->
+                        <p class="card-text">
+                            {% for i in "12345" %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                            {% endfor %}
+                        </p>
+                        
+                        <!-- Product Description -->
+                        <p class="card-text">{{ product_details.description | safe }}</p> <!-- Fixed variable name -->
+
+                        <!-- Buttons -->
+                        <div class="d-flex mx-3 gap-2">
+                            <form class="submitForm">
+                                <input type="hidden" class="product-qty" value="1">
+                                <input type="hidden" class="product-id" value="{{ product_details.id }}">
+                                <input type="hidden" class="product-title" value="{{ product_details.title }}">
+                                <input type="hidden" class="product-price" value="{{ product_details.price }}">
+                                <button type="button" id="addToCartBtn" class="btn btn-primary">Add to cart</button>
+                            </form>
+                            
+                            <!-- Buy Now Button -->
+                            <a href="{% url 'buy_now' id=product_details.id %}" class="btn btn-secondary">Buy Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS SECTION -->
+<section class="container bg-light">
+
+    <div class="row justify-content-center my-5">
+
+            <div class="col-lg-6 col-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="font-weight-bold">REVIEWS (2)</h6>
+                    </div>
+                    <div class="card-body">
+                      
+                        <div class="d-flex justify-content-start align-items-start">
+                            <div class="flex-fill">
+
+                                {{user}} {{date}}
+                           
+                            </div>
+                            <div class="flex-fill text-end">
+                               Feb, March 2024
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h6> {{comment}}</h6>
+                      
+
+                    </div>
+                </div>
+            </div>
+
+
+        <div class="col-lg-2 col-sm-5 col-12">
+
+            <h5 class="font-weight-bold"> Write Your Review <h5>
+
+            <form action=" {% url 'review' %} " method="POST">
+
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea class="form-controls" text="text" name="comment" placeholder="Your Review"></textarea>
+                    <input type="hidden" class="product-id" name="{{product_details.id}}" id="{{product_details.id}} "value="{{product_details.id}}">
+                </div>
+
+                <div class="form-group">
+
+                    <div class="input rating">
+
+                        <p class="font-weight-bold"> Your Rating: </p>
+
+                        <div class="rating-wrapper">
+                            <input type="radio" id="star-5" name="rate" value="5" /> <label for="star-5"
+                        
+                            <p class="card-text">
+                                {% for i in "1" %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% endfor %}
+                            </p>
+                            <input type="radio" id="star-4" name="rate" value="4" /> <label for="star-4"
+                                class="fas fa-star"> </label>
+
+                            <input type="radio" id="star-3" name="rate" value="3" /> <label for="star-3"
+                                class="fas fa-star"> </label>
+
+                            <input type="radio" id="star-2" name="rate" value="2" /> <label for="star-2"
+                                class="fas fa-star"> </label>
+
+                            <input type="radio" id="star-1" name="rate" value="1" /> <label for="star-1"
+                                class="fas fa-star"> </label>
+
+
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary my-3"> Post </button>
+
+                </div>
+            </form>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+<!--END OF REVIEWS SECTION -->
+
+
+<!-- 
+<section class="container bg-light py-5">
+
+    <div class="row justify-content-start">
+
+        <div class="col-10 col-lg-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white text-md-start border-bottom-0">
+                    <h5 class="fw-bold mb-0">REVIEWS (2)</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <h6 class="fw-bold mb-1">Admin</h6>
+                            <small class="text-muted">27 Feb 2021 / 8:00 PM</small>
+                        </div>
+                    </div>
+
+                    <div class="text-md-start">
+
+                        <p> {% lorem 1 b random %} </p>
+
+                    </div>
+                    
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <h6 class="fw-bold mb-1">Admin</h6>
+                            <small class="text-muted">27 Feb 2021 / 8:00 PM</small>
+                        </div>
+                    </div>
+
+                    <div class="text-md-start">
+
+                        <p> {% lorem 1 b random %} </p>
+
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+-->
+
+{% endblock %}

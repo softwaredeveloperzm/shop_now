@@ -1,0 +1,95 @@
+<!-- templates/cart.html -->
+
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'includes/navbar.html' %}
+
+<section>
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="text-center my-5">
+                <h5 class="display-5">Cart</h5>
+            </div>
+
+            <div class="col-12 col-lg-8">
+
+                <div class="card mb-4">
+                    <div class="card-body bg-light">
+                        <a class="btn btn-outline-dark mb-3" href="/">&#x2190; Continue Shopping</a>
+
+                        <table class="table bg-light">
+                            <tr>
+                                <th>
+                                    <h5>Items: <strong id="totalQty">{{ items|length }}</strong></h5>
+                                </th>
+                                <th>
+                                    <h5>Total: <strong id="totalPrice">K{{ total_price }}.00</strong></h5>
+                                </th>
+                                <th class="text-end">
+                                    <a href="{% url 'checkout' %}" class="btn btn-outline-dark">Checkout</a>
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Loop through cart items -->
+                {% for item in items %}
+                <div class="card my-3">
+                    <div class="card-body bg-light">
+                        <div class="d-flex fw-bold mb-3">
+                            <div class="flex-fill">Image</div>
+                            <div class="flex-fill">Name</div>
+                            <div class="flex-fill">Price</div>
+                            <div class="flex-fill">Quantity</div>
+                            <div class="flex-fill">Total</div>
+                        </div>
+
+                        <div class="d-flex align-items-center mb-3 py-2">
+                            <!-- Product Image -->
+                            <div class="flex-fill">
+                                <img class="img-fluid" src="{{ item.image }}" alt="{{ item.title }}" style="max-width: 75px; height: auto;">
+                            </div>
+
+                            <!-- Product Title -->
+                            <div class="flex-fill">
+                                <p class="mb-0">{{ item.title }}</p>
+                            </div>
+
+                            <!-- Product Price -->
+                            <div class="flex-fill">
+                                <p class="mb-0">K{{ item.price }}.00</p>
+                            </div>
+
+                            <!-- Product Quantity -->
+                            <div class="flex-fill">
+                                <div class="d-flex align-items-center">
+                                    <p class="mb-0 me-2" id="itemQty_{{ item.title }}">{{ item.qty }}</p>
+                                    <div class="d-flex flex-column">
+                                        <form class="updateQuantityForm">
+                                            <input type="hidden" class="item-title" value="{{ item.title }}">
+                                            <button type="button" id="updateQty" class="btn btn-primary" data-action="increment">+</button>
+                                            <button type="button" id="updateQty" class="btn btn-danger" data-action="decrement">-</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Product Total Price -->
+                            <div class="flex-fill">
+                                <p class="mb-0" id="itemTotal_{{ item.title }}">K{{ item.final_price_product }}.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
